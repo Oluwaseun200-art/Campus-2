@@ -1,110 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#073b2a">
-  <meta name="description" content="Campus transportation routing prototype for the University of Ibadan.">
-  <title>UI Campus Route — University of Ibadan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: { colors: { forest: '#073b2a', leaf: '#0c6848', lime: '#d5f36a', mist: '#f5f7f2' },
-        fontFamily: { sans: ['DM Sans','sans-serif'], display: ['Manrope','sans-serif'] } } }
-    }
-  </script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A student prototype for finding routes between selected University of Ibadan campus locations.">
+  <title>UI Campus Route Finder</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script src="data/locations.js" defer></script>
+  <script src="js/app.js" defer></script>
 </head>
-<body class="bg-mist text-slate-800">
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="UI Campus Route home">
-      <span class="brand-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 36 12v16L20 37 4 28V12z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M11 25V15l9-5 9 5v10l-9 5z" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="20" cy="20" r="3" fill="currentColor"/></svg></span>
-      <span><strong>UI Campus Route</strong><small>UNIVERSITY OF IBADAN</small></span>
-    </a>
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a class="active" href="#route-planner">Route planner</a><a href="#campus-map">Campus map</a><a href="#about">About</a>
-    </nav>
-    <button id="mobileMenuBtn" class="icon-button mobile-menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+<body>
+  <header class="site-header">
+    <div class="brand-mark" aria-hidden="true">UI</div>
+    <div>
+      <p class="eyebrow">UNIVERSITY OF IBADAN</p>
+      <h1>Campus Route Finder</h1>
+      <p class="subtitle">Find a route between selected campus locations.</p>
+    </div>
   </header>
-  <div id="mobileNav" class="mobile-nav hidden"><a href="#route-planner">Route planner</a><a href="#campus-map">Campus map</a><a href="#about">About this project</a></div>
 
-  <main>
-    <section class="hero">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="live-dot"></span> YOUR CAMPUS, MADE EASIER TO NAVIGATE</div>
-        <h1>Find your way<br>around <em>UI.</em></h1>
-        <p>Plan a campus journey, explore key places and follow a route from one location to another.</p>
-        <div class="hero-pills"><span><i class="pill-icon">⌖</i> Campus locations</span><span><i class="pill-icon">↗</i> Route planning</span><span><i class="pill-icon">▦</i> Interactive map</span></div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-        <div class="hero-pin pin-a">⌖</div><div class="hero-pin pin-b">↗</div><div class="hero-pin pin-c">✦</div>
-        <div class="hero-route"></div><div class="hero-card"><span class="mini-map-icon">↗</span><div><b>One campus</b><small>Many places to discover</small></div></div>
-      </div>
-    </section>
-
-    <section class="workspace" id="route-planner">
-      <aside class="planner-panel">
-        <div class="section-kicker">PLAN YOUR JOURNEY</div>
-        <h2>Where are you going?</h2>
-        <p class="muted">Choose your starting point and destination.</p>
-        <form id="routeForm" class="route-form">
-          <label for="origin">Starting point</label>
-          <div class="select-wrap"><span class="select-dot origin-dot"></span><select id="origin" required aria-label="Starting point"></select></div>
-          <button type="button" id="swapBtn" class="swap-button" aria-label="Swap starting point and destination" title="Swap locations">↕</button>
+  <main class="container">
+    <section class="intro card">
+      <span class="tag">STUDENT PROJECT PROTOTYPE</span>
+      <h2>Where would you like to go?</h2>
+      <p>Choose your starting point and destination to see a route calculated from the sample campus network.</p>
+      <form id="route-form">
+        <div class="field">
+          <label for="origin">Starting location</label>
+          <select id="origin" name="origin" required>
+            <option value="">Choose a starting point</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="destination">Destination</label>
-          <div class="select-wrap"><span class="select-dot destination-dot"></span><select id="destination" required aria-label="Destination"></select></div>
-          <div class="mode-label">ROUTE PREFERENCE</div>
-          <div class="mode-options" role="group" aria-label="Route preference">
-            <button type="button" class="mode-btn active" data-mode="walk" aria-pressed="true"><span>♙</span> Walk</button>
-            <button type="button" class="mode-btn" data-mode="shuttle" aria-pressed="false"><span>▰</span> Campus shuttle*</button>
-          </div>
-          <button class="primary-button" type="submit"><span>Find route</span><span aria-hidden="true">↗</span></button>
-          <button class="text-button" type="button" id="clearRoute">Clear route</button>
-        </form>
-        <div id="routeMessage" class="message hidden" role="status" aria-live="polite"></div>
-        <div id="routeResult" class="route-result hidden" aria-live="polite">
-          <div class="result-head"><span class="result-icon">↗</span><div><span class="section-kicker">SUGGESTED ROUTE</span><h3 id="resultTitle">Your route</h3></div></div>
-          <div class="route-stats"><div><strong id="distanceValue">—</strong><small>Approx. distance</small></div><div><strong id="timeValue">—</strong><small>Est. walking time</small></div></div>
-          <div class="route-step-title">DIRECTIONS</div>
-          <ol id="routeSteps" class="route-steps"></ol>
-          <p class="result-note">Estimates use prototype route data, not live traffic or transport operations.</p>
+          <select id="destination" name="destination" required>
+            <option value="">Choose a destination</option>
+          </select>
         </div>
-        <div class="planner-foot"><span class="foot-check">✓</span><span><b>Built for campus discovery</b><small>Route coverage depends on the locations and connections currently included.</small></span></div>
-      </aside>
-
-      <section class="map-panel" id="campus-map" aria-label="Interactive campus map">
-        <div class="map-topline">
-          <div><span class="map-title">Explore the campus</span><span class="map-subtitle">Select a pin to see a place</span></div>
-          <div class="map-actions"><button id="showAllBtn" class="map-control" type="button">◎ <span>All places</span></button><button id="locateCampusBtn" class="map-control" type="button">⌖ <span>Campus view</span></button></div>
-        </div>
-        <div class="map-search-wrap"><span>⌕</span><input id="placeSearch" type="search" placeholder="Search a building, hostel or landmark..." aria-label="Search campus locations"><button id="clearPlaceSearch" type="button" aria-label="Clear place search">×</button></div>
-        <div class="category-row" id="categoryFilters" aria-label="Filter locations">
-          <button class="category-chip active" data-category="all" type="button">All places</button>
-          <button class="category-chip" data-category="academic" type="button">Academic</button>
-          <button class="category-chip" data-category="transport" type="button">Transport</button>
-          <button class="category-chip" data-category="residential" type="button">Hostels</button>
-          <button class="category-chip" data-category="service" type="button">Services</button>
-        </div>
-        <div class="map-shell"><div id="map" role="application" aria-label="Interactive OpenStreetMap campus map"></div><div class="map-legend"><span><i class="legend-dot green"></i> Campus place</span><span><i class="legend-line"></i> Selected route</span></div><div class="map-note">Map tiles © OpenStreetMap contributors</div></div>
-        <div class="place-strip-head"><div><b>Places to explore</b><span id="placeCount">Locations in this prototype</span></div><button type="button" id="resetFilters" class="small-link">Reset filters</button></div>
-        <div id="placeCards" class="place-cards"></div>
-      </section>
+        <button type="submit" class="primary-button">Find route</button>
+      </form>
+      <p id="form-message" class="message" role="status" aria-live="polite"></p>
     </section>
 
-    <section id="about" class="about-section">
-      <div><span class="section-kicker">ABOUT THIS PROJECT</span><h2>Campus navigation,<br><em>one step at a time.</em></h2></div>
-      <p>This web prototype follows the Campus Transportation Routing System proposal: it organizes campus locations, models route connections as a graph and uses Dijkstra’s algorithm to find a minimum-cost path through the available sample network.</p>
-      <div class="about-callout"><span>ⓘ</span><p><b>Prototype data notice</b><br>Map pins and route connections are illustrative and must be verified against current University of Ibadan locations and approved transport routes before real-world use. Live GPS, live arrival times and traffic feeds are not included.</p></div>
+    <section class="card results-card" aria-labelledby="results-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">YOUR JOURNEY</p>
+          <h2 id="results-heading">Route result</h2>
+        </div>
+        <span class="route-icon" aria-hidden="true">↗</span>
+      </div>
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon" aria-hidden="true">⌖</div>
+        <p>Your route will appear here after you select both locations.</p>
+      </div>
+      <div id="route-result" hidden>
+        <div class="metrics">
+          <div class="metric"><span>Estimated distance</span><strong id="distance">—</strong></div>
+          <div class="metric"><span>Indicative walking time</span><strong id="duration">—</strong></div>
+        </div>
+        <h3>Locations in order</h3>
+        <ol id="route-list" class="route-list"></ol>
+        <p class="small-note">Distance and time are illustrative estimates based on the sample data, not live measurements.</p>
+      </div>
+    </section>
+
+    <section class="notice">
+      <strong>About this prototype</strong>
+      <p>This demo uses a sample network for coursework. Confirm actual routes, distances and transport connections with reliable University of Ibadan information before using it for real journeys. It does not provide live GPS tracking or real-time traffic.</p>
     </section>
   </main>
-  <footer><span>© 2026 UI Campus Route</span><span>Campus Transportation Routing System · University of Ibadan</span></footer>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="data/locations.js"></script>
-  <script src="js/app.js"></script>
+
+  <footer>
+    <p>Campus Transportation Routing System · Academic prototype</p>
+  </footer>
 </body>
 </html>

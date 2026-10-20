@@ -1,42 +1,43 @@
-# UI Campus Route — University of Ibadan
+# Campus Transportation Routing System
 
-A responsive campus transportation routing prototype based on the uploaded project proposal.
+A lightweight web-based academic prototype for finding a route between selected University of Ibadan campus locations.
 
-## Features
-- Responsive layout for desktop, tablet and mobile.
-- Interactive OpenStreetMap map using Leaflet.
-- Campus location pins with popups and "set as start/destination" actions.
-- Location search and category filters.
-- Origin/destination selection and swap controls.
-- Dijkstra shortest-path search across a weighted graph.
-- Route polyline, ordered route steps, approximate distance and estimated time.
-- Accessible labels, keyboard-operable controls, input validation and no-route handling.
+## Technologies
+- HTML5: page structure
+- CSS3: styling and responsive layout
+- JavaScript: validation and route calculation
+- Dijkstra-style shortest-path search: selects the lowest-distance path in the stored sample network
+
+## Folder structure
+```text
+Campus_Transportation_Routing_System/
+├── index.html
+├── README.md
+├── css/
+│   └── styles.css
+├── js/
+│   └── app.js
+└── data/
+    └── locations.js
+```
 
 ## Run locally
-1. Extract the ZIP.
-2. Open `index.html` in a modern browser. If your browser blocks local scripts, run a local static server from this folder, for example:
-   - VS Code: install/use Live Server, then right-click `index.html` → **Open with Live Server**.
-   - Python: `python -m http.server 8000`, then visit `http://localhost:8000`.
-3. Internet access is required for the Tailwind CDN, Leaflet library, fonts and OpenStreetMap tiles.
+Open `index.html` in a modern browser. The app uses local JavaScript files and does not require a backend server.
 
-## File structure
-- `index.html` — page structure, Tailwind setup and external libraries.
-- `css/styles.css` — custom design and responsive styling.
-- `js/app.js` — map setup, UI events and Dijkstra route search.
-- `data/locations.js` — editable campus location and connection data.
+## Publish with GitHub Pages
+1. Upload the contents of this folder to the root of your GitHub repository (not the ZIP file itself).
+2. Keep `index.html` at the repository root.
+3. Keep `css/styles.css`, `js/app.js`, and `data/locations.js` at the exact paths shown above.
+4. In the repository, open **Settings → Pages**.
+5. Under the build/deployment source, choose **Deploy from a branch**, select the branch containing your files (often `main`) and choose **/(root)**, then save.
+6. Wait for deployment and open the published site.
 
-## Important data and scope note
-The proposal describes a route-search prototype and explicitly places live vehicle GPS, live traffic, arrival predictions, payment and ticketing outside the initial scope. This implementation does not claim to provide those services.
+## Important limitations
+The included locations and distances are illustrative sample data, not verified official University of Ibadan route measurements. Replace them with verified campus data before relying on the results for real travel. The prototype does not provide live GPS tracking, real-time traffic, vehicle tracking, ticketing or live transport schedules. The displayed walking time is a rough estimate based on distance.
 
-The initial map coordinates, connections, distances and shuttle preference costs are illustrative starter data, not an official University of Ibadan GIS dataset or approved transport network. Verify every location, coordinate, path, distance, stop and service detail with reliable campus information before using this for real journeys. OpenStreetMap is a base map and is not itself proof that the route network in this prototype is official.
-
-## Editing the data
-Edit `data/locations.js`.
-- Each location has a unique `id`, name, category, description, latitude and longitude.
-- Each connection is `[fromId, toId, distanceKm]`.
-- Connections are treated as bidirectional in this prototype.
-- Dijkstra requires non-negative edge weights.
-- If you change the location IDs, update all references in the connection list.
-
-## Production improvements
-For a deployable service, verify route data, test all paths and screen sizes, add a server/API and database if persistent administrative updates are needed, establish a route-data maintenance process, and review accessibility, privacy, security and OpenStreetMap usage requirements.
+## Suggested tests
+- Choose two different locations and confirm that a route is displayed.
+- Choose the same location for both fields and confirm a validation message appears.
+- Submit with one or both fields empty and confirm a validation message appears.
+- Try several origin/destination pairs and check the ordered stops.
+- Test the page on both phone and desktop widths.
